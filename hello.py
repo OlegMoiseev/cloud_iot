@@ -3,24 +3,6 @@ import random
 import sqlite3
 import work_with_db as dbase
 
-page = '''<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Простая форма</title>
-</head>
-<body>
-<form action="action_form.php" method="POST">
-  <p>Моя первая форма:<br>
-    Lat: <input type="text" name="latitude" value=""><br>
-    Long:  <input type="text" name="longitude" value=""><br>
-    <input type="submit">
-  </p>
-</form>
-</body>
-</html>   
-'''
-
 
 def get_connection():
     conn = sqlite3.connect("trashes.db")  # или :memory: чтобы сохранить в RAM
@@ -38,11 +20,6 @@ def hello():
         return "HELO"
     else:
         return str(all_info)
-
-
-@app.route("/start")
-def start():
-    return page
 
 
 @app.route("/create")
@@ -95,8 +72,8 @@ def update_trash():
         abort(400)
     conn, db = get_connection()
     dbase.change_trash(db, conn, request.json['id'], request.json['fullness'])
-    return "UPDATED", 201
+    return "UPDATED", 202
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')
