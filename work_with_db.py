@@ -52,9 +52,9 @@ if __name__=='__main__':
     latitude = round(random.uniform(-90, 90), 6)
     longitude = round(random.uniform(-180, 180), 6)
 
-    create_table(db, conn)
     # new_id = add_trash(db, conn, latitude, longitude)
     # print(new_id)
     # change_trash(db, conn, 1, 45)
     # print(get_all_trash(db))
-    # drop_trash(db, conn)
+    drop_trash(db, conn)
+    create_table(db, conn)

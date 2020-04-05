@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, render_template
 import random
 import sqlite3
 import work_with_db as dbase
@@ -9,17 +9,25 @@ def get_connection():
     return conn, conn.cursor()
 
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='./static',
+            template_folder='./templates')
 
 
 @app.route("/")
-def hello():
-    conn, db = get_connection()
-    all_info = dbase.get_all_trash(db)
-    if not all_info:
-        return "HELO"
-    else:
-        return str(all_info)
+def root():
+    return render_template('dashboard.html')
+    # conn, db = get_connection()
+    # all_info = dbase.get_all_trash(db)
+    # if not all_info:
+    #     return "HELO"
+    # else:
+    #     return str(all_info)
+
+
+@app.route("/icons")
+def icons():
+    return render_template('icons.html')
 
 
 @app.route("/create")
@@ -63,7 +71,7 @@ def add_trash():
         abort(400)
     conn, db = get_connection()
     new_id = dbase.add_trash(db, conn, request.json['latitude'], request.json['longitude'])
-    return jsonify({'id': str(new_id)}), 201
+    return str(new_id), 201
 
 
 @app.route('/update', methods=['POST'])
@@ -71,6 +79,7 @@ def update_trash():
     if not request.json or not 'id' in request.json or not 'fullness' in request.json:
         abort(400)
     conn, db = get_connection()
+    print(request.json['id'], request.json['fullness'])
     dbase.change_trash(db, conn, request.json['id'], request.json['fullness'])
     return "UPDATED", 202
 
