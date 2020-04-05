@@ -17,12 +17,16 @@ app = Flask(__name__,
 @app.route("/")
 def root():
     return render_template('dashboard.html')
-    # conn, db = get_connection()
-    # all_info = dbase.get_all_trash(db)
-    # if not all_info:
-    #     return "HELO"
-    # else:
-    #     return str(all_info)
+
+
+@app.route("/get_all")
+def get_all():
+    conn, db = get_connection()
+    all_info = dbase.get_all_trash(db)
+    if not all_info:
+        return "HELO"
+    else:
+        return str(all_info)
 
 
 @app.route("/icons")

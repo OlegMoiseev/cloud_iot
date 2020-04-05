@@ -31,7 +31,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 </head>
 
-<body class="">
+<body class="" onload="getInfoAll()">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white">
       <!--
@@ -177,112 +177,24 @@ The above copyright notice and this permission notice shall be included in all c
             <div class="col-lg-12 col-md-12">
               <div class="card">
                 <div class="card-header card-header-info">
-                  <h4 class="card-title">Employees Stats</h4>
-                  <p class="card-category">New employees at
-                  <script>
-
-                    var today = new Date();
-                    document.write(today.toString());
-                  </script>
-                  </p>
+                  <h4 class="card-title">Trash Stats</h4>
+                  <p class="card-category" id="trashDate"></p>
                 </div>
                 <div class="card-body table-responsive table-wrapper-scroll-y my-custom-scrollbar">
-                  <table class="table table-hover table-bordered">
+                  <table class="table table-hover table-striped table-bordered" id="myTable">
                     <thead class="text-info">
                       <th>ID</th>
                       <th>Fullness</th>
                       <th>Latitude</th>
                       <th>Longitude</th>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>10</td>
-                        <td>34.134234</td>
-                        <td>43.231231</td>
-                      </tr>
-                      <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                      <tr>
-                        <td>3</td>
-                        <td>98</td>
-                        <td>98.343242</td>
-                        <td>8.323123</td>
-                      </tr>
-                      <tr>
-                        <td>4</td>
-                        <td>56</td>
-                        <td>11.123456</td>
-                        <td>9.343897</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>23</td>
-                        <td>-45.232332</td>
-                        <td>87.343243</td>
-                      </tr>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                 </div>
               </div>
+            </div>
+            <div class="col-lg-3">
+              <a href="#" class="btn btn-success" onclick="getInfoAll()">getInfoAll</a>
             </div>
           </div>
         </div>
@@ -355,17 +267,20 @@ The above copyright notice and this permission notice shall be included in all c
   <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
   <script src="../static/js/plugins/nouislider.min.js"></script>
   <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>-->
   <!-- Library for adding dinamically elements -->
   <script src="../static/js/plugins/arrive.min.js"></script>
   <!--  Google Maps Plugin    -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+<!--  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>-->
   <!-- Chartist JS -->
   <script src="../static/js/plugins/chartist.min.js"></script>
   <!--  Notifications Plugin    -->
   <script src="../static/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../static/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
+
+  <script src="../static/js/app.js"></script>
+
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script>
     $(document).ready(function() {
@@ -373,6 +288,7 @@ The above copyright notice and this permission notice shall be included in all c
       $('#dtVerticalScrollExample').DataTable({
         "scrollY": "50vh",
         "scrollCollapse": true,
+        "order": [[ 0, "asc" ]]
         });
       $('.dataTables_length').addClass('bs-select');
         });
@@ -544,7 +460,6 @@ The above copyright notice and this permission notice shall be included in all c
 
         });
       });
-    });
   </script>
   <script>
     $(document).ready(function() {
