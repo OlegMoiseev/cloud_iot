@@ -1,1 +1,1 @@
-run:hello
+web:gunicorn run:hello
