@@ -42,4 +42,3 @@ function getInfoAll() {
     };
     xhr.send();
 }
-
