@@ -45,7 +45,7 @@ The above copyright notice and this permission notice shall be included in all c
       <div class="sidebar-wrapper">
         <ul class="nav">
           <li class="nav-item active">
-            <a class="nav-link" href=#>
+            <a class="nav-link" href="./dashboard.html">
               <i class="material-icons">dashboard</i>
               <p>Dashboard</p>
             </a>
@@ -245,6 +245,7 @@ The above copyright notice and this permission notice shall be included in all c
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script>
     $(document).ready(function() {
+      let timerReload = setInterval(getInfoAll, 1000);
 
       $('#dtVerticalScrollExample').DataTable({
         "scrollY": "50vh",

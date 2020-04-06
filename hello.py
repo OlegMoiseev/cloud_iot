@@ -19,12 +19,17 @@ def root():
     return render_template('dashboard.html')
 
 
+@app.route("/dashboard.html")
+def dash():
+    return render_template('dashboard.html')
+
+
 @app.route("/map.html")
 def map():
     return render_template('map.html')
 
 
-@app.route("/graph")
+@app.route("/graph.html")
 def graph():
     return render_template('graph.html')
 

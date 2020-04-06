@@ -43,4 +43,3 @@ function getInfoAll() {
     xhr.send();
 }
 
-let timerReload = setInterval(getInfoAll, 1000);
