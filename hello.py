@@ -19,6 +19,16 @@ def root():
     return render_template('dashboard.html')
 
 
+@app.route("/map.html")
+def map():
+    return render_template('map.html')
+
+
+@app.route("/graph")
+def graph():
+    return render_template('graph.html')
+
+
 @app.route("/get_all")
 def get_all():
     conn, db = get_connection()
@@ -27,11 +37,6 @@ def get_all():
         return "HELO"
     else:
         return str(all_info)
-
-
-@app.route("/icons")
-def icons():
-    return render_template('icons.html')
 
 
 @app.route("/create")
