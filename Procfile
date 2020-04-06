@@ -1,1 +1,1 @@
-run:app
+run:hello
