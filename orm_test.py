@@ -48,14 +48,14 @@ if __name__ == '__main__':
     engine = db.create_engine(con)
     connection = engine.connect()
 
-    # Base.metadata.create_all(engine)  # create table
+    Base.metadata.create_all(engine)  # create table
 
     # new_id = add_trash(95.234231, 47.231233)
     # print(new_id)
 
-    print_all_trash()
-    change_trash(2, 67)
-    print_all_trash()
+    # print_all_trash()
+    # change_trash(2, 67)
+    # print_all_trash()
 
 
 

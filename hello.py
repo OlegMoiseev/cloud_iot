@@ -18,9 +18,12 @@ app = Flask(__name__,
 login = environ['MASTER_USER']
 password = environ['MASTER_KEY']
 
+
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
                                         '.amazonaws.com:5432/dbase'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -78,7 +81,8 @@ def add_trash():
     db.session.add(trash)
     db.session.commit()
     new_item = Trash.query.filter_by(latitude=lat, longitude=long).one()
-    return new_item.id, 201
+    print(new_item.id)
+    return str(new_item.id), 201
 
 
 @app.route('/update', methods=['POST'])
@@ -89,6 +93,18 @@ def update_trash():
     item = Trash.query.filter_by(id=request.json['id']).one()
     item.fullness = request.json['fullness']
     return "UPDATED", 202
+
+
+@app.route('/create')
+def create():
+    db.create_all()
+    return "CREATED", 201
+
+
+@app.route('/drop')
+def drop():
+    db.drop_all()
+    return "DROPPED", 200
 
 # ----------------------------------------------------------
 @app.route('/trash/<int:trash_id>', methods=['GET'])
