@@ -81,7 +81,6 @@ def add_trash():
     db.session.add(trash)
     db.session.commit()
     new_item = Trash.query.filter_by(latitude=lat, longitude=long).one()
-    print(new_item.id)
     return str(new_item.id), 201
 
 
@@ -89,9 +88,9 @@ def add_trash():
 def update_trash():
     if not request.json or not 'id' in request.json or not 'fullness' in request.json:
         abort(400)
-    print(request.json['id'], request.json['fullness'])
     item = Trash.query.filter_by(id=request.json['id']).one()
     item.fullness = request.json['fullness']
+    db.session.commit()
     return "UPDATED", 202
 
 
