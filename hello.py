@@ -2,6 +2,8 @@ from flask import Flask, request, abort, jsonify, render_template
 import random
 import sqlite3
 import work_with_db as dbase
+from flask_sqlalchemy import SQLAlchemy
+from os import environ
 
 
 def get_connection():
@@ -12,6 +14,23 @@ def get_connection():
 app = Flask(__name__,
             static_folder='./static',
             template_folder='./templates')
+
+login = environ['MASTER_USER']
+password = environ['MASTER_KEY']
+
+url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
+                                        '.amazonaws.com:5432/dbase'
+app.config['SQLALCHEMY_DATABASE_URI'] = url
+db = SQLAlchemy(app)
+
+
+class Trash(db.Model):
+    __tablename__ = 'trashes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fullness = db.Column('fullness', db.Integer, default=0)
+    latitude = db.Column('latitude', db.Float, nullable=False)
+    longitude = db.Column('longitude', db.Float, nullable=False)
 
 
 @app.route("/")
@@ -36,26 +55,33 @@ def graph():
 
 @app.route("/get_all")
 def get_all():
-    conn, db = get_connection()
-    all_info = dbase.get_all_trash(db)
+    all_info = '['
+    for item in Trash.query.all():
+        all_info += '(' + str(item.id) + ', ' + str(item.fullness) + ', ' + str(item.latitude) + ', '\
+                    + str(item.longitude) + '), '
+    all_info = all_info[:-2] + ']'
+
     if not all_info:
         return "HELO"
     else:
-        return str(all_info)
+        return all_info
 
 
-@app.route("/create")
-def create():
-    conn, db = get_connection()
-    dbase.create_table(db, conn)
+@app.route('/add', methods=['POST'])
+def add_trash():
+    if not request.json or not 'latitude' in request.json or not 'longitude' in request.json:
+        abort(400)
+
+    lat = request.json['latitude']
+    long = request.json['longitude']
+    trash = Trash(latitude=lat, longitude=long)
+    db.session.add(trash)
+    db.session.commit()
+    new_item = Trash.query.filter_by(latitude=lat, longitude=long).one()
+    return new_item.id, 201
 
 
-@app.route("/drop")
-def drop():
-    conn, db = get_connection()
-    dbase.drop_trash(db, conn)
-
-
+# ----------------------------------------------------------
 @app.route('/trash/<int:trash_id>', methods=['GET'])
 def get_trash(trash_id):
     conn, db = get_connection()
@@ -77,15 +103,6 @@ def add_random():
     longitude = round(random.uniform(-180, 180), 6)
     new_id = dbase.add_trash(db, conn, latitude, longitude)
     return str(new_id)
-
-
-@app.route('/add', methods=['POST'])
-def add_trash():
-    if not request.json or not 'latitude' in request.json or not 'longitude' in request.json:
-        abort(400)
-    conn, db = get_connection()
-    new_id = dbase.add_trash(db, conn, request.json['latitude'], request.json['longitude'])
-    return str(new_id), 201
 
 
 @app.route('/update', methods=['POST'])
