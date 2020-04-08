@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-con = 'postgresql://postgres:oleg12537@trash-db.cfazlfwlhavj.eu-west-2.rds.amazonaws.com:5432/dbase'
+con = 'postgresql://postgres:*@trash-db.cfazlfwlhavj.eu-west-2.rds.amazonaws.com:5432/dbase'
 
 Base = declarative_base()
 
