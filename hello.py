@@ -81,6 +81,15 @@ def add_trash():
     return new_item.id, 201
 
 
+@app.route('/update', methods=['POST'])
+def update_trash():
+    if not request.json or not 'id' in request.json or not 'fullness' in request.json:
+        abort(400)
+    print(request.json['id'], request.json['fullness'])
+    item = Trash.query.filter_by(id=request.json['id']).one()
+    item.fullness = request.json['fullness']
+    return "UPDATED", 202
+
 # ----------------------------------------------------------
 @app.route('/trash/<int:trash_id>', methods=['GET'])
 def get_trash(trash_id):
@@ -105,14 +114,6 @@ def add_random():
     return str(new_id)
 
 
-@app.route('/update', methods=['POST'])
-def update_trash():
-    if not request.json or not 'id' in request.json or not 'fullness' in request.json:
-        abort(400)
-    conn, db = get_connection()
-    print(request.json['id'], request.json['fullness'])
-    dbase.change_trash(db, conn, request.json['id'], request.json['fullness'])
-    return "UPDATED", 202
 
 
 if __name__ == "__main__":
