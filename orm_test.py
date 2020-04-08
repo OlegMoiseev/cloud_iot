@@ -2,8 +2,7 @@ import sqlalchemy as db
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
-con = 'postgresql://postgres:*@trash-db.cfazlfwlhavj.eu-west-2.rds.amazonaws.com:5432/dbase'
+con = 'postgresql://postgres:oleg12537@trash-db.cfazlfwlhavj.eu-west-2.rds.amazonaws.com:5432/dbase'
 
 Base = declarative_base()
 
@@ -55,7 +54,7 @@ if __name__ == '__main__':
     # print(new_id)
 
     print_all_trash()
-    change_trash(5, 12)
+    change_trash(2, 67)
     print_all_trash()
 
 
