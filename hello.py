@@ -1,14 +1,10 @@
 from flask import Flask, request, abort, jsonify, render_template
-import random
-import sqlite3
-import work_with_db as dbase
 from flask_sqlalchemy import SQLAlchemy
+import random
+import work_with_db as dbase
 from os import environ
-
-
-def get_connection():
-    conn = sqlite3.connect("trashes.db")  # или :memory: чтобы сохранить в RAM
-    return conn, conn.cursor()
+from graphviz import Graph
+import base64
 
 
 app = Flask(__name__,
@@ -17,6 +13,7 @@ app = Flask(__name__,
 
 login = environ['MASTER_USER']
 password = environ['MASTER_KEY']
+
 
 
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
@@ -53,7 +50,16 @@ def map():
 
 @app.route("/graph.html")
 def graph():
-    return render_template('graph.html')
+    chart_data = Graph()
+
+    chart_data.node('H', 'Hello')
+    chart_data.node('W', 'World')
+    chart_data.edge('H', 'W')
+
+    chart_output = chart_data.pipe(format='png')
+    chart_output = base64.b64encode(chart_output).decode('utf-8')
+
+    return render_template('graph.html', chart_output=chart_output)
 
 
 @app.route("/get_all")
@@ -108,7 +114,7 @@ def drop():
 # ----------------------------------------------------------
 @app.route('/trash/<int:trash_id>', methods=['GET'])
 def get_trash(trash_id):
-    conn, db = get_connection()
+    conn, db = None, None
     info = dbase.get_one_trash(db, trash_id)
     if info is not None:
         return jsonify({'ID': info[0],
@@ -122,7 +128,7 @@ def get_trash(trash_id):
 
 @app.route("/add_random")
 def add_random():
-    conn, db = get_connection()
+    conn, db = None, None
     latitude = round(random.uniform(-90, 90), 6)
     longitude = round(random.uniform(-180, 180), 6)
     new_id = dbase.add_trash(db, conn, latitude, longitude)
