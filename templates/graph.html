@@ -88,28 +88,15 @@ The above copyright notice and this permission notice shall be included in all c
       <img src="data:image/png;base64,{{chart_output|safe}}" style="margin-left: auto; margin-right: auto; margin-top: 5rem" alt="Greate Graph!"/>
         <p>Click the button to get your coordinates.</p>
 
-        <button onclick="getLocation()">Try It</button>
+        <button onclick="getGraph()" style="margin-top: 15vh">Try It</button>
 
         <p id="demo"></p>
 
-        <script>
-        var x = document.getElementById("demo");
 
-        function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-          } else {
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-
-        function showPosition(position) {
-          x.innerHTML = "Latitude: " + position.coords.latitude +
-          "<br>Longitude: " + position.coords.longitude;
-        }
-        </script>
     </div>
   </div>
+
+  <script src="../static/js/app.js"></script>
   <!--   Core JS Files   -->
   <script src="../static/js/core/jquery.min.js"></script>
   <script src="../static/js/core/popper.min.js"></script>

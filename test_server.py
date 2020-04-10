@@ -1,7 +1,7 @@
 import requests
 
-data = {"latitude": 59.890493,
-        "longitude": 30.289959}
+data = {"latitude": 59.851192,
+        "longitude": 30.117709}
 
 r = requests.post("http://trash-system.herokuapp.com/add", json=data)
 print(r.text)

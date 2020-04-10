@@ -20,7 +20,10 @@ ymaps.ready(function(){
             let vars = result[i].split(", ");
             var lat = parseFloat(vars[2]);
             var long = parseFloat(vars[3]);
-            var trash_can = new ymaps.Placemark([lat, long]);
+            var name_id = vars[0].toString();
+            var trash_can = new ymaps.Placemark([lat, long], {
+                iconContent: name_id
+            });
             trash_map.geoObjects.add(trash_can);
         }
     };

@@ -6,7 +6,6 @@ from os import environ
 from graphviz import Graph
 import base64
 
-
 app = Flask(__name__,
             static_folder='./static',
             template_folder='./templates')
@@ -14,10 +13,8 @@ app = Flask(__name__,
 login = environ['MASTER_USER']
 password = environ['MASTER_KEY']
 
-
-
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
-                                        '.amazonaws.com:5432/dbase'
+                                                           '.amazonaws.com:5432/dbase'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -31,6 +28,21 @@ class Trash(db.Model):
     fullness = db.Column('fullness', db.Integer, default=0)
     latitude = db.Column('latitude', db.Float, nullable=False)
     longitude = db.Column('longitude', db.Float, nullable=False)
+
+
+def find_closest(item_trash, item_list):
+    print(item_list)
+    start_lat = item_trash.latitude
+    start_long = item_trash.longitude
+    min_id = 0
+    l_min = 10e9
+    for i in range(len(item_list)):
+        l = ((item_list[i].latitude - start_lat) ** 2 + (item_list[i].longitude - start_long) ** 2) ** 0.5
+        if l < l_min:
+            l_min = l
+            min_id = i
+    item_list.remove(item_list[min_id])
+    return str(min_id+1)  # because in postgres lists from 1
 
 
 @app.route("/")
@@ -48,13 +60,31 @@ def map():
     return render_template('map.html')
 
 
+@app.route("/test_graph")
+def test_graph():
+    pass
+
+
 @app.route("/graph.html")
 def graph():
     chart_data = Graph()
 
-    chart_data.node('H', 'Hello')
-    chart_data.node('W', 'World')
-    chart_data.edge('H', 'W')
+    items = Trash.query.all()
+
+    print(items)
+
+    start_item = items[0]
+    items.remove(start_item)
+    chart_data.node(str(start_item.id), str(start_item.id))
+    prev_id = str(start_item.id)
+    print(items)
+
+    for item in items:
+        new_id = find_closest(item, items)
+        chart_data.node(new_id, new_id)
+        chart_data.edge(prev_id, new_id)
+        prev_id = new_id
+
 
     chart_output = chart_data.pipe(format='png')
     chart_output = base64.b64encode(chart_output).decode('utf-8')
@@ -66,7 +96,7 @@ def graph():
 def get_all():
     all_info = '['
     for item in Trash.query.all():
-        all_info += '(' + str(item.id) + ', ' + str(item.fullness) + ', ' + str(item.latitude) + ', '\
+        all_info += '(' + str(item.id) + ', ' + str(item.fullness) + ', ' + str(item.latitude) + ', ' \
                     + str(item.longitude) + '), '
     all_info = all_info[:-2] + ']'
 
@@ -111,6 +141,7 @@ def drop():
     db.drop_all()
     return "DROPPED", 200
 
+
 # ----------------------------------------------------------
 @app.route('/trash/<int:trash_id>', methods=['GET'])
 def get_trash(trash_id):
@@ -133,8 +164,6 @@ def add_random():
     longitude = round(random.uniform(-180, 180), 6)
     new_id = dbase.add_trash(db, conn, latitude, longitude)
     return str(new_id)
-
-
 
 
 if __name__ == "__main__":
