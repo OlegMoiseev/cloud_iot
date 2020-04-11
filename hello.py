@@ -10,8 +10,11 @@ app = Flask(__name__,
             static_folder='./static',
             template_folder='./templates')
 
-login = environ['MASTER_USER']
-password = environ['MASTER_KEY']
+# login = environ['MASTER_USER']
+# password = environ['MASTER_KEY']
+login = 'postgres'
+password = 'oleg12537'
+
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
                                                            '.amazonaws.com:5432/dbase'
 
@@ -29,12 +32,16 @@ class Trash(db.Model):
     longitude = db.Column('longitude', db.Float, nullable=False)
 
 
-def find_closest(item_trash, item_list):
-    print(item_trash, item_list)
-    skip_id = item_trash.id
-
-    start_lat = item_trash.latitude
-    start_long = item_trash.longitude
+def find_closest(item_list, item_trash=None, lat=None, long=None):
+    print(item_list)
+    if item_trash is None:
+        start_lat = lat
+        start_long = long
+        skip_id = -1
+    else:
+        skip_id = item_trash.id
+        start_lat = item_trash.latitude
+        start_long = item_trash.longitude
 
     min_i = 0
     l_min = 10e9
@@ -65,34 +72,45 @@ def map():
     return render_template('map.html')
 
 
-@app.route("/test_graph")
-def test_graph():
-    pass
+@app.route("/render_graph", methods=['POST'])
+def render_graph():
+    user_coords = str(request.data)
+    user_coords = user_coords.split('&')
+    user_latitude = float(user_coords[0][6:])
+    user_longitude = float(user_coords[1][5:-1])
 
-
-@app.route("/graph.html")
-def graph():
     chart_data = Graph()
 
     items = Trash.query.all()
 
-    print(items)
-    start_item = items.pop(0)
-    prev_egde_id = str(start_item.id)
-    chart_data.node(prev_egde_id, prev_egde_id)
+    chart_data.node('U', 'USER')
+    prev_egde_id = 'U'
+
+    start_item = find_closest(items, lat=user_latitude, long=user_longitude)
+    cl_item_id = str(start_item.id)
+    chart_data.node(cl_item_id, cl_item_id)
+    chart_data.edge(prev_egde_id, cl_item_id)
+    prev_egde_id = cl_item_id
 
     while items:
-        closest_item = find_closest(start_item, items)
+        closest_item = find_closest(items, start_item)
         cl_item_id = str(closest_item.id)
         chart_data.node(cl_item_id, cl_item_id)
         chart_data.edge(prev_egde_id, cl_item_id)
         prev_egde_id = cl_item_id
-    print(items)
+        start_item = closest_item
 
     chart_output = chart_data.pipe(format='png')
     chart_output = base64.b64encode(chart_output).decode('utf-8')
 
-    return render_template('graph.html', chart_output=chart_output)
+    return chart_output
+
+
+@app.route("/graph.html")
+def graph():
+    return render_template('graph.html')
+
+
 
 
 @app.route("/get_all")

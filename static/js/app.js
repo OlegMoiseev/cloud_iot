@@ -42,45 +42,38 @@ function getInfoAll() {
 
 
 function getGraph() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/get_all', true);
-    xhr.onload = function () {
-        var text = xhr.responseText;
-        text = text.slice(2, -2);
-        var trashes = [];
-        var result = text.split("), (");
-
-        for (let i = 0; i < result.length; ++i) {
-            let vars = result[i].split(", ");
-            trashes.push([vars[2], vars[3]]);
-        }
-        console.log(trashes);
-
-        var xhr = new XMLHttpRequest();
-
-        var body = 'name=' + encodeURIComponent(name) +
-          '&surname=' + encodeURIComponent(surname);
-
-        xhr.open("POST", '/submit', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    // if (navigator.geolocation) {
+    // navigator.geolocation.getCurrentPosition(getPosition);
+    // } else {
+    //     x.innerHTML = "Geolocation is not supported by this browser.";
+    // }
 
 
-        xhr.send(body);
+    lat = 12.232;
+    long = 42.335;
 
-        // if (navigator.geolocation) {
-        // navigator.geolocation.getCurrentPosition(getPosition);
-        // } else {
-        //     x.innerHTML = "Geolocation is not supported by this browser.";
-        // }
 
-    };
-    xhr.send();
+    var xhr = new XMLHttpRequest();
+    var body = '{latitude: ' + lat.toString(6) + ',\nlongitude: ' + long.toString(6) + '}';
 
+    xhr.open("POST", '/render_graph', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+
+    // xhr.send(body);
 
     function getPosition(position) {
         lat = position.coords.latitude;
         long = position.coords.longitude;
-        const tmp = getTrahesCoordinates();
-        console.log(tmp);
+
+
+        var xhr = new XMLHttpRequest();
+        var body = '{latitude: ' + lat.toString(6) + ',\nlongitude: ' + long.toString(6) + '}';
+
+        xhr.open("POST", '/render_graph', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+
+        xhr.send(body);
     }
 }
