@@ -10,10 +10,8 @@ app = Flask(__name__,
             static_folder='./static',
             template_folder='./templates')
 
-# login = environ['MASTER_USER']
-# password = environ['MASTER_KEY']
-login = 'postgres'
-password = 'oleg12537'
+login = environ['MASTER_USER']
+password = environ['MASTER_KEY']
 
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
                                                            '.amazonaws.com:5432/dbase'
