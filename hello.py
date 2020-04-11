@@ -12,7 +12,6 @@ app = Flask(__name__,
 
 login = environ['MASTER_USER']
 password = environ['MASTER_KEY']
-
 url = 'postgresql://' + str(login) + ':' + str(password) + '@trash-db.cfazlfwlhavj.eu-west-2.rds' \
                                                            '.amazonaws.com:5432/dbase'
 
@@ -31,18 +30,24 @@ class Trash(db.Model):
 
 
 def find_closest(item_trash, item_list):
-    print(item_list)
+    print(item_trash, item_list)
+    skip_id = item_trash.id
+
     start_lat = item_trash.latitude
     start_long = item_trash.longitude
-    min_id = 0
+
+    min_i = 0
     l_min = 10e9
-    for i in range(len(item_list)):
-        l = ((item_list[i].latitude - start_lat) ** 2 + (item_list[i].longitude - start_long) ** 2) ** 0.5
-        if l < l_min:
-            l_min = l
-            min_id = i
-    item_list.remove(item_list[min_id])
-    return str(min_id+1)  # because in postgres lists from 1
+    for i in range(0, len(item_list)):
+        if item_list[i].id != skip_id:
+            l = ((item_list[i].latitude - start_lat) ** 2 + (item_list[i].longitude - start_long) ** 2) ** 0.5
+            if l < l_min:
+                l_min = l
+                min_i = i
+
+    cl_item = item_list.pop(min_i)
+
+    return cl_item
 
 
 @app.route("/")
@@ -72,19 +77,17 @@ def graph():
     items = Trash.query.all()
 
     print(items)
+    start_item = items.pop(0)
+    prev_egde_id = str(start_item.id)
+    chart_data.node(prev_egde_id, prev_egde_id)
 
-    start_item = items[0]
-    items.remove(start_item)
-    chart_data.node(str(start_item.id), str(start_item.id))
-    prev_id = str(start_item.id)
+    while items:
+        closest_item = find_closest(start_item, items)
+        cl_item_id = str(closest_item.id)
+        chart_data.node(cl_item_id, cl_item_id)
+        chart_data.edge(prev_egde_id, cl_item_id)
+        prev_egde_id = cl_item_id
     print(items)
-
-    for item in items:
-        new_id = find_closest(item, items)
-        chart_data.node(new_id, new_id)
-        chart_data.edge(prev_id, new_id)
-        prev_id = new_id
-
 
     chart_output = chart_data.pipe(format='png')
     chart_output = base64.b64encode(chart_output).decode('utf-8')
